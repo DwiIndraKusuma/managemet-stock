@@ -28,11 +28,11 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Items - View: All authenticated, CRUD: Admin Gudang only
     Route::get('/items', [ItemController::class, 'index'])->name('items.index');
-    Route::get('/items/{id}', [ItemController::class, 'show'])->name('items.show');
     Route::middleware('role:admin_gudang')->group(function () {
         Route::get('/items/create', [ItemController::class, 'create'])->name('items.create');
         Route::get('/items/{id}/edit', [ItemController::class, 'edit'])->name('items.edit');
     });
+    Route::get('/items/{id}', [ItemController::class, 'show'])->name('items.show');
 
     // Categories - View: All authenticated, CRUD: Admin Gudang only
     Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
@@ -50,20 +50,22 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Requests - View: All authenticated, Create/Edit: Technician & Admin Gudang
     Route::get('/requests', [RequestController::class, 'index'])->name('requests.index');
-    Route::get('/requests/{id}', [RequestController::class, 'show'])->name('requests.show');
     Route::middleware('role:technician,admin_gudang')->group(function () {
         Route::get('/requests/create', [RequestController::class, 'create'])->name('requests.create');
         Route::get('/requests/{id}/edit', [RequestController::class, 'edit'])->name('requests.edit');
     });
+    Route::get('/requests/{id}', [RequestController::class, 'show'])->name('requests.show');
 
     // Purchase Orders - View: Admin Gudang & SPV, CRUD: Admin Gudang only
     Route::middleware('role:admin_gudang,spv')->group(function () {
         Route::get('/purchase-orders', [PurchaseOrderController::class, 'index'])->name('purchase-orders.index');
-        Route::get('/purchase-orders/{id}', [PurchaseOrderController::class, 'show'])->name('purchase-orders.show');
     });
     Route::middleware('role:admin_gudang')->group(function () {
         Route::get('/purchase-orders/create', [PurchaseOrderController::class, 'create'])->name('purchase-orders.create');
         Route::get('/purchase-orders/{id}/edit', [PurchaseOrderController::class, 'edit'])->name('purchase-orders.edit');
+    });
+    Route::middleware('role:admin_gudang,spv')->group(function () {
+        Route::get('/purchase-orders/{id}', [PurchaseOrderController::class, 'show'])->name('purchase-orders.show');
     });
 
     // Receivings - Admin Gudang only
@@ -83,11 +85,13 @@ Route::middleware('auth:sanctum')->group(function () {
     // Stock Opnames - View: Admin Gudang & SPV, CRUD: Admin Gudang only
     Route::middleware('role:admin_gudang,spv')->group(function () {
         Route::get('/stock-opnames', [StockOpnameController::class, 'index'])->name('stock-opnames.index');
-        Route::get('/stock-opnames/{id}', [StockOpnameController::class, 'show'])->name('stock-opnames.show');
     });
     Route::middleware('role:admin_gudang')->group(function () {
         Route::get('/stock-opnames/create', [StockOpnameController::class, 'create'])->name('stock-opnames.create');
         Route::get('/stock-opnames/{id}/edit', [StockOpnameController::class, 'edit'])->name('stock-opnames.edit');
+    });
+    Route::middleware('role:admin_gudang,spv')->group(function () {
+        Route::get('/stock-opnames/{id}', [StockOpnameController::class, 'show'])->name('stock-opnames.show');
     });
 
     // Users (Admin Gudang only)

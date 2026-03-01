@@ -75,13 +75,56 @@ document.addEventListener('DOMContentLoaded', function() {
                 throw new Error('API client not available');
             }
 
-            const response = await window.api.get('/items');
-            const itemsData = response.data?.data?.data || response.data?.data || response.data || [];
+            const response = await window.api.get('/items?per_page=100');
+            console.log('Items response:', response.data);
+            
+            // Handle different response structures
+            let itemsData = [];
+            if (response.data?.data) {
+                if (response.data.data.data) {
+                    itemsData = response.data.data.data; // Paginated
+                } else if (Array.isArray(response.data.data)) {
+                    itemsData = response.data.data; // Array
+                }
+            } else if (Array.isArray(response.data)) {
+                itemsData = response.data;
+            }
+            
             items = Array.isArray(itemsData) ? itemsData : [];
+            console.log('Loaded items:', items.length);
+            
+            if (items.length === 0) {
+                console.warn('No items found');
+            }
         } catch (error) {
             console.error('Error loading items:', error);
+            items = [];
+            
+            // Handle 401 - redirect to login
+            if (error.response?.status === 401) {
+                if (window.showAlert) {
+                    window.showAlert('Session expired. Please login again.', 'error');
+                }
+                setTimeout(() => {
+                    window.location.href = '/login';
+                }, 2000);
+                return;
+            }
+            
+            // Handle 403 - show specific message
+            if (error.response?.status === 403) {
+                if (window.showAlert) {
+                    window.showAlert('You do not have permission to access this page.', 'error');
+                }
+                setTimeout(() => {
+                    window.location.href = '/dashboard';
+                }, 2000);
+                return;
+            }
+            
             if (window.showAlert) {
-                window.showAlert('Failed to load items', 'error');
+                const errorMsg = error.response?.data?.message || 'Failed to load items';
+                window.showAlert(errorMsg, 'error');
             }
         }
     }
@@ -210,7 +253,26 @@ document.addEventListener('DOMContentLoaded', function() {
 
     waitForAPI(() => {
         loadItems().then(() => {
-            addItemRow(); // Add first row
+            if (items.length > 0) {
+                addItemRow(); // Add first row
+            } else {
+                const container = document.getElementById('items-container');
+                if (container) {
+                    container.innerHTML = '<p class="text-red-500 text-center py-4">No items available. Please add items first.</p>';
+                }
+                if (window.showAlert) {
+                    window.showAlert('No items available. Please add items first.', 'error');
+                }
+            }
+        }).catch((error) => {
+            console.error('Error in loadItems:', error);
+            const container = document.getElementById('items-container');
+            if (container) {
+                container.innerHTML = '<p class="text-red-500 text-center py-4">Failed to load items. Please refresh the page.</p>';
+            }
+            if (window.showAlert) {
+                window.showAlert('Failed to load items. Please refresh the page.', 'error');
+            }
         });
     });
 });
