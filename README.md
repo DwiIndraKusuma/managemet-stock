@@ -57,3 +57,15 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+
+## Documentation
+
+📖 **Untuk dokumentasi instalasi lengkap, silakan lihat [README_API.md](README_API.md)**
+
+Quick links:
+- [📋 Requirements](README_API.md#requirements)
+- [🚀 Installation Steps](README_API.md#installation-steps)
+- [🔧 Troubleshooting](README_API.md#troubleshooting)
+- [📡 API Endpoints](README_API.md#api-endpoints)
+- [👥 Default Users](README_API.md#default-users)
